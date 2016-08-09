@@ -37,7 +37,7 @@ void Si4703_Breakout::setChannel(int channel)
         //9.8 / 0.2 = 49
         int newChannel = channel * 10; //973 * 10 = 9730
         newChannel -= 8750; //9730 - 8750 = 980
-        newChannel /= 10; //980 / 10 = 98
+        newChannel /= 20; //980 / 10 = 98
 
         //These steps come from AN230 page 20 rev 0.5
         readRegisters();
@@ -174,9 +174,7 @@ int Si4703_Breakout::si4703_init()
         si4703_registers[POWERCFG] = 0x4001; //Enable the IC
 
         si4703_registers[SYSCONFIG1] |= (1<<RDS); //Enable RDS
-        si4703_registers[SYSCONFIG1] |= (1<<DE); //50kHz Europe setup
 
-        si4703_registers[SYSCONFIG2] |= (1<<SPACE0); //100kHz channel spacing for Europe
         //si4703_registers[SYSCONFIG2] &= 0xFFF0; //Clear volume bits
         //si4703_registers[SYSCONFIG2] |= 0x0001; //Set volume to lowest
         updateRegisters(); //Update
@@ -301,6 +299,7 @@ int Si4703_Breakout::getChannel()
         int channel = si4703_registers[READCHAN] & 0x03FF; //Mask out everything but the lower 10 bits
         //Freq(MHz) = 0.100(in Europe) * Channel + 87.5MHz
         //X = 0.1 * Chan + 87.5
+        channel *= 2;
         channel += 875; //98 + 875 = 973
 
         return(channel);
